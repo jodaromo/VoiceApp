@@ -1,0 +1,28 @@
+[package]
+name = "voiceapp"
+version = "1.0.0"
+edition = "2021"
+description = "Voice dictation virtual keyboard for Windows 11"
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = ["tray-icon"] }
+tauri-plugin-global-shortcut = "2"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+tokio = { version = "1", features = ["full"] }
+tokio-tungstenite = { version = "0.26", features = ["native-tls"] }
+futures-util = "0.3"
+enigo = { version = "0.3", features = ["serde"] }
+url = "2"
+log = "0.4"
+env_logger = "0.11"
+http = "1"
+base64 = "0.22"
+png = "0.17"
+tauri-plugin-shell = "2"
+
+[target.'cfg(not(any(target_os = "android", target_os = "ios")))'.dependencies]
+tauri-plugin-global-shortcut = "2"

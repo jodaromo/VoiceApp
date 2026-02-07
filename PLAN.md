@@ -12,7 +12,7 @@ User presses F10 (or clicks mic button)
   → Audio streams to AI transcription engine
   → Transcribed text is injected as keystrokes into the focused app
   → Dynamic sound wave animation plays while user speaks
-User presses F12 (or clicks stop button)
+User presses F11 (or clicks stop button)
   → Dictation stops
   → System tray icon updates to "Deactivated"
 ```
@@ -29,7 +29,7 @@ User presses F12 (or clicks stop button)
 | **Frontend** | React 19 + TypeScript + Vite |
 | **Backend** | Rust (Tauri commands + native Windows API access) |
 | **System Tray** | Built-in `tray-icon` plugin |
-| **Global Hotkeys** | `tauri-plugin-global-shortcut` for F10/F12 |
+| **Global Hotkeys** | `tauri-plugin-global-shortcut` for F10/F11 |
 | **Keystroke Injection** | Rust `enigo` crate (uses Windows `SendInput` API under the hood) |
 
 ### 2.2 Frontend UI: **React 19 + TypeScript + Vite + Tailwind CSS 4**
@@ -108,7 +108,7 @@ The `enigo` crate provides cross-platform input simulation. On Windows, it wraps
 │  │                                                                │   │
 │  │  ┌──────────────────────────────────────────────────────────┐ │   │
 │  │  │  Global Shortcut Handler                                  │ │   │
-│  │  │  F10 → Start Dictation    F12 → Stop Dictation            │ │   │
+│  │  │  F10 → Start Dictation    F11 → Stop Dictation            │ │   │
 │  │  │  (tauri-plugin-global-shortcut)                           │ │   │
 │  │  └──────────────────────────────────────────────────────────┘ │   │
 │  └────────────────────────────────────────────────────────────────┘   │
@@ -161,7 +161,7 @@ VoiceApp/
 │       │   └── tray_manager.rs          # Tray icon + menu + status updates
 │       ├── hotkeys/                     # Global hotkey registration
 │       │   ├── mod.rs
-│       │   └── shortcuts.rs            # F10/F12 handlers
+│       │   └── shortcuts.rs            # F10/F11 handlers
 │       └── state.rs                    # Shared app state (Arc<Mutex<AppState>>)
 │
 ├── src/                                 # React frontend
@@ -292,7 +292,7 @@ fn update_tray_status(app: &AppHandle, is_active: bool, language: &str) {
 | Key | Action |
 |---|---|
 | **F10** | Start dictation (if not already active) |
-| **F12** | Stop dictation (if currently active) |
+| **F11** | Stop dictation (if currently active) |
 
 ```rust
 // Pseudocode
@@ -302,7 +302,7 @@ app.plugin(
             if event.state == ShortcutState::Pressed {
                 if shortcut == &Shortcut::new(None, Code::F10) {
                     start_dictation(app);
-                } else if shortcut == &Shortcut::new(None, Code::F12) {
+                } else if shortcut == &Shortcut::new(None, Code::F11) {
                     stop_dictation(app);
                 }
             }
@@ -402,7 +402,7 @@ Step 7: On is_final == true:
         ↓
 Step 8: Frontend updates LanguageIndicator + continues animation
         ↓
-Step 9: User presses F12 (or clicks stop button)
+Step 9: User presses F11 (or clicks stop button)
         → Frontend stops microphone capture
         → Rust closes Deepgram WebSocket
         → System tray updates to "Deactivated"
@@ -433,7 +433,7 @@ The app window is a **compact, always-on-top floating widget** (not a full windo
 │         │  🟢 Active · EN-US  │   ← status bar    │
 │         └─────────────────────┘                   │
 │                                                    │
-│    F10: Start  ·  F12: Stop                        │
+│    F10: Start  ·  F11: Stop                        │
 └──────────────────────────────────────────────────┘
 ```
 
@@ -573,7 +573,7 @@ API keys should be stored securely — either in the Windows Credential Manager 
 - [ ] Handle edge case: VoiceApp window must lose focus before injecting
 
 ### Phase 6: Global Hotkeys + System Tray (Day 8)
-- [ ] Register F10 (start) and F12 (stop) global shortcuts
+- [ ] Register F10 (start) and F11 (stop) global shortcuts
 - [ ] Implement tray icon state updates (active/inactive icons)
 - [ ] Add tray context menu (Activate, Deactivate, Settings, Quit)
 - [ ] Minimize to tray on window close
@@ -607,7 +607,7 @@ API keys should be stored securely — either in the Windows Credential Manager 
 | **Web Audio API over native audio** | Available in WebView2, provides `AnalyserNode` for free (sound wave viz), no need for Rust audio capture libraries. |
 | **Zustand over Redux/Context** | Minimal boilerplate for a small app. Just a few state slices (isActive, language, audioLevel). |
 | **Motion (Framer Motion) over CSS** | Spring physics for natural-feeling sound wave bars, `AnimatePresence` for icon crossfade, gesture support for button interactions. |
-| **Separate F10/F12 over toggle** | Explicit start/stop avoids ambiguity. User always knows exactly what each key does. No accidental toggling. |
+| **Separate F10/F11 over toggle** | Explicit start/stop avoids ambiguity. User always knows exactly what each key does. No accidental toggling. |
 
 ---
 
